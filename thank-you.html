@@ -227,6 +227,13 @@
       if (elName) elName.textContent = fullName;
       if (elPhone) elPhone.textContent = phone;
       if (elDate) elDate.textContent = date;
+
+      if (typeof fbq === "function") {
+        fbq("track", "Purchase", {
+          value: 799,
+          currency: "MAD"
+        });
+      }
     </script>
   </body>
 </html>
