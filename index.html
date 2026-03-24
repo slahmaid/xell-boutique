@@ -507,6 +507,27 @@
         statusNode.textContent = text || "";
       }
 
+      function sendOrderToSheets(url, payload) {
+        var body = JSON.stringify(payload);
+
+        if (navigator.sendBeacon) {
+          var blob = new Blob([body], { type: "text/plain;charset=utf-8" });
+          if (navigator.sendBeacon(url, blob)) {
+            return Promise.resolve();
+          }
+        }
+
+        return fetch(url, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: body,
+          keepalive: true
+        }).then(function () {});
+      }
+
       forms.forEach(function (form) {
         form.addEventListener("submit", async function (event) {
           event.preventDefault();
@@ -534,9 +555,7 @@
             name: name,
             phone: phone,
             address: address,
-            form_id: formId,
-            page_url: window.location.href,
-            user_agent: navigator.userAgent
+            status: "Nouveau"
           };
 
           window.dataLayer = window.dataLayer || [];
@@ -550,14 +569,7 @@
             if (submitButton) submitButton.disabled = true;
             setFormStatus(form, "جاري إرسال الطلب...", "is-loading");
 
-            await fetch(SHEETS_WEB_APP_URL, {
-              method: "POST",
-              mode: "no-cors",
-              headers: {
-                "Content-Type": "text/plain;charset=utf-8"
-              },
-              body: JSON.stringify(payload)
-            });
+            await sendOrderToSheets(SHEETS_WEB_APP_URL, payload);
 
             setFormStatus(form, "تم استلام طلبك بنجاح. جاري تحويلك لصفحة التأكيد...", "is-success");
             var orderDate = new Date().toLocaleString("ar-MA", {
