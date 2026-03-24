@@ -550,23 +550,14 @@
             if (submitButton) submitButton.disabled = true;
             setFormStatus(form, "جاري إرسال الطلب...", "is-loading");
 
-            var response = await fetch(SHEETS_WEB_APP_URL, {
+            await fetch(SHEETS_WEB_APP_URL, {
               method: "POST",
-              mode: "cors",
+              mode: "no-cors",
               headers: {
                 "Content-Type": "text/plain;charset=utf-8"
               },
               body: JSON.stringify(payload)
             });
-
-            if (!response.ok) {
-              throw new Error("Request failed: " + response.status);
-            }
-
-            var result = await response.json();
-            if (result.status !== "success") {
-              throw new Error(result.message || "Unknown error");
-            }
 
             setFormStatus(form, "تم استلام طلبك بنجاح. جاري تحويلك لصفحة التأكيد...", "is-success");
             var orderDate = new Date().toLocaleString("ar-MA", {
@@ -586,7 +577,7 @@
             }, 700);
             form.reset();
           } catch (error) {
-            setFormStatus(form, "تعذر إرسال الطلب الآن. حاول مرة أخرى خلال لحظات.", "is-error");
+            setFormStatus(form, "تعذر إرسال الطلب. تأكد من الإنترنت أو رابط Google Sheets ثم أعد المحاولة.", "is-error");
           } finally {
             if (submitButton) submitButton.disabled = false;
           }
