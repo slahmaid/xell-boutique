@@ -588,6 +588,10 @@
 
             await sendOrderToSheets(SHEETS_WEB_APP_URL, payload);
 
+            if (typeof fbq === "function") {
+              fbq("track", "Lead");
+            }
+
             setFormStatus(form, "تم استلام طلبك بنجاح. جاري تحويلك لصفحة التأكيد...", "is-success");
             var orderDate = new Date().toLocaleString("ar-MA", {
               year: "numeric",
